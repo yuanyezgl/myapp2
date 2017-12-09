@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Phone Changer</title>
+    <title>My App</title>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <style>
@@ -14,7 +14,7 @@
     </style>
     <script>
         $(function() {
-            $("#phoneChangerForm").submit(function(event) {
+			$("#WriteForm").submit(function(event) {
                 event.preventDefault();
 
                 var errorMessage = $("#errorMessage");
@@ -23,12 +23,9 @@
 
                 $("#message").hide();
 
-                var firstName = $("#firstName").val();
-                var lastName = $("#lastName").val();
-                var email = $("#email").val();
-                var phone = $("#phone").val();
-
-                if (firstName.length == 0 || lastName.length == 0 || email.length == 0 || phone.length == 0) {
+                var Name = $("#name").val();
+				var value = $("#value").val();		
+                if (Name.length == 0) {
                     errorMessage.text("All of the fields are required.");
                     error.show();
                 }
@@ -37,19 +34,21 @@
                         url: event.target.action,
                         method: event.target.method,
                         data: JSON.stringify({
-                            firstName: firstName,
-                            lastName: lastName,
-                            email: email,
-                            phone: phone
+                            name : Name,
+							value	 : value
                         }),
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
                         success: function(data) {
-                            $("#firstName").val("");
-                            $("#lastName").val("");
-                            $("#email").val("");
-                            $("#phone").val("");
-                            $("#messageMessage").text("Record updated!");
+							var action = event.target.action;
+							if (action.substr(action.length-4,4) == "read"){
+								$("#name").val(data.rows[0].name);
+								$("#value").val(data.rows[0].val__c);
+								$("#messageMessage").text("Read Complete");
+							}else{
+								$("#value").val("");
+								$("#messageMessage").text("Write Complete");
+							}
                             $("#message").show();
                         },
                         error: function(err) {
@@ -67,34 +66,27 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a class="navbar-brand" href="/">Phone Number Changer</a>
+                <a class="navbar-brand" href="/">My Object</a>
             </div>
         </div>
     </nav>
 
     <div class="container">
-        <form id="phoneChangerForm" action="/update" method="post" style="width: 400px">
+        <form id="WriteForm" method="post" style="width: 400px">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Update Your Phone Number</h3>
+                    <h3 class="panel-title">Operations on your Object</h3>
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="For verification" required>
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="">
                     </div>
                     <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" class="form-control" id="lastName" placeholder="For verification" required>
+                        <label for="value">Val</label>
+                        <input type="text" class="form-control" id="value" placeholder="">
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" placeholder="For verification" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Phone</label>
-                        <input type="tel" class="form-control" id="phone" placeholder="New Phone Number" required>
-                    </div>
+					
                 </div>
                 <div class="panel-footer">
                     <div id="message" class="alert alert-info" role="alert" style="display: none;">
@@ -106,7 +98,10 @@
                         <span class="sr-only">Error:</span>
                         <span id="errorMessage"></span>
                     </div>
-                    <button type="submit" class="btn btn-primary">Update Phone Number</button>
+					<button type="submit" class="btn btn-primary" onclick="WriteForm.action='/read'">Read an object</button>
+                    <button type="submit" class="btn btn-primary" onclick="WriteForm.action='/create'">Create a new object</button>
+					<button type="submit" class="btn btn-primary" onclick="WriteForm.action='/update'">Update the object</button>
+					<button type="submit" class="btn btn-primary" onclick="WriteForm.action='/del'">Delete an object</button>
                 </div>
             </div>
         </form>
